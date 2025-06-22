@@ -62,32 +62,43 @@ npm test
 npm run build
 ```
 
-### Tomcat Deployment Commands
+### Docker Commands
 
 Run these commands from the root directory:
 
 ```bash
-# Setup local Tomcat environment
-./setup-tomcat.sh
+# Start all services (builds images if needed)
+docker-compose up --build
 
-# Start Tomcat
-./start-tomcat.sh
+# Start in background
+docker-compose up -d
 
-# Stop Tomcat
-./stop-tomcat.sh
+# Stop all services  
+docker-compose down
 
-# Deploy WAR file to Tomcat
-cp backend/build/libs/front-back-web-1.0-SNAPSHOT.war tomcat/webapps/front-back-web.war
+# View logs
+docker-compose logs -f [service-name]
+
+# Rebuild specific service
+docker-compose build [service-name]
+
+# Execute commands in running containers
+docker-compose exec backend bash
+docker-compose exec database mysql -u sammy -p frontbackwebdb
 ```
 
 ### Database Commands
 
 ```bash
-# Initialize database (one-time setup)
-mysql -u root < backend/src/main/resources/init.sql
+# Connect to database in Docker
+docker-compose exec database mysql -u sammy -ppassword123 frontbackwebdb
 
-# Reset database if needed
-mysql -u root -e "DROP DATABASE frontbackwebdb;"
+# Reset database (WARNING: deletes all data)
+docker-compose down -v
+docker-compose up database
+
+# View database logs
+docker-compose logs database
 ```
 
 ## Architecture Overview
@@ -104,10 +115,11 @@ mysql -u root -e "DROP DATABASE frontbackwebdb;"
    - Tokens are validated for protected endpoints
    - User passwords are encrypted with BCrypt
 
-3. **API Endpoints**:
+3. **API Endpoints** (available at http://localhost:8080):
    - `/api/auth/login`: Authenticate user and return JWT
    - `/api/auth/register`: Register new user and return JWT
    - `/api/auth/me`: Get current user information (requires authentication)
+   - `/actuator/health`: Health check endpoint
 
 ### Component Structure
 
@@ -125,17 +137,22 @@ mysql -u root -e "DROP DATABASE frontbackwebdb;"
 
 ## Database Configuration
 
-The application uses a MySQL database with the following configuration:
+The application uses a MySQL database running in Docker with the following configuration:
 - Database name: `frontbackwebdb`
 - Username: `sammy`
 - Password: `password123`
-- Connection URL: `jdbc:mysql://localhost:3306/frontbackwebdb`
+- **Docker internal URL**: `jdbc:mysql://database:3306/frontbackwebdb`
+- **External access**: `localhost:3307` (mapped from container port 3306)
 
-The database schema is managed manually, not through Hibernate's auto-generation.
+The database schema is managed manually, not through Hibernate's auto-generation. Database initialization happens automatically via Docker volume mount of `init.sql`.
 
 ## Development Environment
 
-- Java 21 or newer
-- Node.js (latest LTS version)
-- MySQL 8.0.42 or newer
-- Tomcat 9.0.0 or newer (installed via Homebrew)
+**For Docker deployment (recommended):**
+- Docker Desktop
+- Docker Compose
+
+**For local development:**
+- Java 21 or newer (for backend development)
+- Node.js (latest LTS version) (for frontend development)
+- IDE of choice (IntelliJ IDEA, VS Code, etc.)

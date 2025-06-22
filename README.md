@@ -1,157 +1,201 @@
 # Audio Translation Web Application
 
-A full-stack web application with React frontend and Spring Boot backend, featuring user authentication and registration functionality.
+A full-stack web application with React frontend and Spring Boot backend, featuring user authentication and JWT-based security. This application is fully containerized using Docker for easy deployment and development.
 
-## Important Note: Cursor IDE Integration
+## Features
 
-When running the application in Cursor IDE, be aware of the Java extension's behavior:
-1. The Java extension auto-manages Spring Boot applications
-2. It may detect and shut down manual Tomcat processes to prevent "conflicts"
-3. This can cause issues with the application startup
-
-Solutions for development:
-1. Use the provided `run-app.sh` script which:
-   - Starts Tomcat in a separate terminal
-   - Starts React frontend in another terminal
-   - Avoids Cursor's Java extension interference
-2. Or disable Java auto-management in Cursor settings
-3. Or use Cursor's run configurations instead of manual scripts
+- 🔐 User authentication with JWT tokens
+- 👤 User registration and login system
+- 🛡️ Secure password storage using BCrypt
+- 🔒 Protected routes in frontend
+- 🐳 Full Docker containerization
+- 📊 Health checks and monitoring
+- 🎨 Modern React UI with responsive design
 
 ## Project Structure
 
 ```
-front-back-web/
-├── frontend/                    # React frontend application
+audio-translation-web/
+├── docker-compose.yml         # Docker orchestration
+├── docker-test.sh            # Docker testing script
+│
+├── frontend/                  # React frontend application
+│   ├── Dockerfile            # Frontend container build
+│   ├── nginx.conf           # Production web server config
 │   ├── src/
-│   │   ├── components/         # React components
-│   │   │   ├── auth/          # Authentication components
-│   │   │   │   ├── Login.tsx  # Login page with registration link
-│   │   │   │   ├── Register.tsx # Registration page
-│   │   │   │   └── ProtectedRoute.tsx # Route protection
-│   │   │   └── Dashboard.tsx  # Main dashboard with welcome message
-│   │   ├── contexts/          # React contexts
-│   │   │   └── AuthContext.tsx # Authentication context
-│   │   ├── services/          # API services
-│   │   │   └── authService.ts # Authentication API calls
-│   │   ├── types/             # TypeScript types
-│   │   │   └── auth.ts        # Authentication types
-│   │   └── App.tsx           # Main application component
-│   └── package.json          # Frontend dependencies
+│   │   ├── components/      # React components
+│   │   │   ├── auth/       # Authentication components
+│   │   │   │   ├── Login.tsx
+│   │   │   │   ├── Register.tsx
+│   │   │   │   └── ProtectedRoute.tsx
+│   │   │   └── Dashboard.tsx
+│   │   ├── contexts/        # React contexts
+│   │   │   └── AuthContext.tsx
+│   │   ├── services/        # API services
+│   │   │   └── authService.ts
+│   │   ├── types/           # TypeScript types
+│   │   │   └── auth.ts
+│   │   └── App.tsx
+│   └── package.json
 │
 ├── backend/                   # Spring Boot backend application
+│   ├── Dockerfile            # Backend container build
 │   ├── src/
 │   │   ├── main/
 │   │   │   ├── java/com/example/frontbackweb/
-│   │   │   │   ├── config/          # Configuration classes
-│   │   │   │   │   └── SecurityConfig.java
-│   │   │   │   ├── controller/      # REST controllers
-│   │   │   │   │   └── AuthController.java
-│   │   │   │   ├── model/           # Data models
-│   │   │   │   │   └── User.java
-│   │   │   │   ├── repository/      # Data access layer
-│   │   │   │   │   └── UserRepository.java
-│   │   │   │   ├── security/        # Security related classes
-│   │   │   │   │   └── JwtAuthenticationFilter.java
-│   │   │   │   └── service/         # Business logic
-│   │   │   │       └── UserService.java
+│   │   │   │   ├── config/         # Configuration classes
+│   │   │   │   ├── controller/     # REST controllers
+│   │   │   │   ├── model/          # Data models
+│   │   │   │   ├── repository/     # Data access layer
+│   │   │   │   ├── security/       # JWT security
+│   │   │   │   └── service/        # Business logic
 │   │   │   └── resources/
-│   │   │       ├── application.properties  # Application configuration
-│   │   │       ├── init.sql               # Database initialization
-│   │   │       ├── schema.sql             # Database schema
-│   │   │       └── data.sql               # Initial data
-│   │   └── test/                # Test classes
-│   ├── build.gradle            # Backend dependencies
-│   └── gradlew                 # Gradle wrapper
+│   │   │       ├── application.properties     # Default config
+│   │   │       ├── application-docker.properties  # Docker config
+│   │   │       └── init.sql       # Database initialization
+│   │   └── test/               # Test classes
+│   ├── build.gradle           # Backend dependencies
+│   └── gradlew               # Gradle wrapper
 │
-├── tomcat/                     # Local Tomcat server
-│   ├── bin/                   # Tomcat binaries (symlink)
-│   ├── conf/                  # Tomcat configuration (symlink)
-│   ├── lib/                   # Tomcat libraries (symlink)
-│   ├── logs/                  # Application logs
-│   ├── temp/                  # Temporary files
-│   ├── webapps/              # Deployed applications
-│   └── work/                 # Working directory
-│
-├── run-app.sh                 # Script to start both frontend and backend
-├── start-tomcat.sh           # Script to start Tomcat
-├── stop-tomcat.sh            # Script to stop Tomcat
 └── README.md                 # Project documentation
 ```
 
-## Features
-
-- User authentication with JWT
-- User registration with email verification
-- Secure password storage using BCrypt
-- Protected routes in frontend
-- RESTful API endpoints
-- React-based user interface with Material-UI
-- MySQL database for data persistence
-- External Tomcat deployment
-
 ## Quick Start
 
-1. Start the application using the run script:
+### Option 1: Docker (Recommended)
+
+1. Start the application with Docker Compose:
    ```bash
-   ./run-app.sh
+   docker-compose up --build
    ```
-   This will:
-   - Start Tomcat server in one terminal
-   - Start React frontend in another terminal
 
 2. Access the application:
    - Frontend: http://localhost:3000
-   - Backend API: http://localhost:8080/front-back-web/api
+   - Backend API: http://localhost:8080/api
+   - Database: localhost:3307 (MySQL)
 
 3. Default admin credentials:
    - Username: `admin`
    - Password: `admin123`
 
-## Development Setup
+4. Stop the application:
+   ```bash
+   docker-compose down
+   ```
 
-### Frontend (React)
+### Option 2: Local Development
 
-1. Navigate to the frontend directory:
+For development without Docker (requires local setup):
+
+1. **Backend**: 
+   ```bash
+   cd backend
+   ./gradlew bootRun
+   ```
+
+2. **Frontend**:
    ```bash
    cd frontend
-   ```
-
-2. Install dependencies (only needed first time or when dependencies change):
-   ```bash
    npm install
-   ```
-
-3. Clean and build the production version:
-   ```bash
-   # Remove the old build
-   rm -rf build/
-   # Create new production build
-   npm run build
-   ```
-
-4. Start the development server:
-   ```bash
    npm start
    ```
 
-### Backend (Spring Boot)
+3. **Database**: Set up local MySQL with credentials in `application.properties`
 
-1. Navigate to the backend directory:
-   ```bash
-   cd backend
-   ./gradlew clean
-   ```
+## Docker Deployment
 
-2. Build the project:
-   ```bash
-   ./gradlew build
-   ```
+### Prerequisites
+- Docker and Docker Compose installed
+- No local MySQL or other services running on ports 3000, 8080, or 3307
 
-3. Deploy to Tomcat:
-   ```bash
-   ./gradlew war
-   cp build/libs/front-back-web-1.0-SNAPSHOT.war ../tomcat/webapps/front-back-web.war
-   ```
+### Services Overview
+The Docker setup includes three services:
+- **Frontend**: React app served by Nginx (port 3000)
+- **Backend**: Spring Boot API (port 8080)  
+- **Database**: MySQL 8.0 (port 3307)
+
+### Docker Commands
+
+```bash
+# Start all services (builds images if needed)
+docker-compose up --build
+
+# Start in background
+docker-compose up -d
+
+# View logs
+docker-compose logs -f [service-name]
+
+# Stop all services
+docker-compose down
+
+# Stop and remove volumes (WARNING: deletes database data)
+docker-compose down -v
+
+# Rebuild specific service
+docker-compose build [service-name]
+docker-compose up [service-name]
+
+# Execute commands in running containers
+docker-compose exec backend bash
+docker-compose exec database mysql -u sammy -p frontbackwebdb
+```
+
+### Docker Troubleshooting
+
+**Port conflicts:**
+```bash
+# Check what's using ports
+lsof -i :3000
+lsof -i :8080  
+lsof -i :3307
+
+# Kill conflicting processes
+sudo kill -9 <PID>
+```
+
+**Database issues:**
+```bash
+# Reset database volume
+docker-compose down -v
+docker-compose up database
+
+# Connect to database directly
+docker-compose exec database mysql -u root -prootpassword123
+```
+
+**Application logs:**
+```bash
+# View all logs
+docker-compose logs
+
+# View specific service logs
+docker-compose logs backend
+docker-compose logs frontend
+docker-compose logs database
+```
+
+## Architecture
+
+### Services Overview
+The application consists of three containerized services:
+
+1. **Frontend** (React + Nginx)
+   - Modern React application with TypeScript
+   - JWT-based authentication
+   - Responsive Material-UI components
+   - Production-ready Nginx server
+
+2. **Backend** (Spring Boot)
+   - RESTful API with Spring Security
+   - JWT token authentication
+   - JPA/Hibernate for database access
+   - Health checks and monitoring endpoints
+
+3. **Database** (MySQL 8.0)
+   - Persistent data storage
+   - Automatic initialization with sample data
+   - Health checks and connection pooling
 
 ## Authentication Flow
 
@@ -170,142 +214,164 @@ front-back-web/
    - Unauthenticated users are redirected to login
    - JWT token is validated on each request
 
+## API Endpoints
+
+All API endpoints are available at `http://localhost:8080/api`:
+
+- `POST /api/auth/login` - User login
+- `POST /api/auth/register` - User registration  
+- `GET /api/auth/me` - Get current user (requires JWT)
+- `GET /actuator/health` - Application health check
+
 ## Troubleshooting
 
-### Tomcat Issues
-If Tomcat fails to start:
-```bash
-# Check Tomcat process
-ps aux | grep tomcat
+### Docker Issues
 
-# Kill Tomcat process
-pkill -f tomcat
-# or force kill
-pkill -9 -f tomcat
+**Services won't start:**
+```bash
+# Check container status
+docker-compose ps
+
+# View container logs
+docker-compose logs [service-name]
+
+# Restart services
+docker-compose restart [service-name]
 ```
 
-### Frontend Issues
-If React development server fails:
+**Port conflicts:**
 ```bash
-# Check processes using port 3000
-lsof -i :3000
+# Check what's using the ports
+lsof -i :3000  # Frontend
+lsof -i :8080  # Backend
+lsof -i :3307  # Database
 
-# Kill the process
-kill <PID>
+# Kill conflicting processes
+sudo kill -9 <PID>
+```
+
+**Database issues:**
+```bash
+# Reset database (WARNING: deletes all data)
+docker-compose down -v
+
+# Connect directly to database
+docker-compose exec database mysql -u sammy -ppassword123 frontbackwebdb
+```
+
+**Clean restart:**
+```bash
+# Remove all containers and networks
+docker-compose down --remove-orphans
+
+# Remove all images and rebuild
+docker-compose build --no-cache
+docker-compose up
 ```
 
 ## Prerequisites
 
-- Java 21
-- Node.js (managed via nvm)
-- MySQL
-- Gradle
+**For Docker deployment (recommended):**
+- Docker Desktop
+- Docker Compose
 
+**For local development:**
+- Java 21+ (for backend development)
+- Node.js 18+ (for frontend development)
+- MySQL 8.0+ (for local database)
 
+## Technology Stack
 
-Differences between ./gradlew bootRun and ./start-tomcat.sh:
-   ./gradlew bootRun:
-      Uses Spring Boot's embedded Tomcat server
-      Runs directly from the Spring Boot application
-      Simpler to use but less configurable
-      Good for development and testing
-      Runs on the default Spring Boot port (8080)
-      Managed by Spring Boot's lifecycle
-   ./start-tomcat.sh:
-      Uses an external, standalone Tomcat server
-      More configurable (can modify server.xml, etc.)
-      Better for production-like environments
-      Allows multiple applications to run on the same Tomcat instance
-      Can be configured with different ports, SSL, etc.
-      Managed independently of the application
+- **Frontend**: React 19, TypeScript, Material-UI, Axios
+- **Backend**: Spring Boot 3.2, Spring Security, JWT, JPA/Hibernate
+- **Database**: MySQL 8.0
+- **Infrastructure**: Docker, Docker Compose, Nginx
+- **Build Tools**: Gradle 8.x, npm
 
+## Development Workflow
 
+### Getting Started
+1. **Clone and start the application:**
+   ```bash
+   git clone <repository-url>
+   cd audio-translation-web
+   docker-compose up --build
+   ```
 
-### Build Configuration
+2. **Access the application:**
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:8080/api
+   - Database: localhost:3307
 
-The project uses Gradle 8.x with the following key configurations in `build.gradle`:
+3. **Default login credentials:**
+   - Username: `admin`
+   - Password: `admin123`
 
-```groovy
-plugins {
-    id 'java'
-    id 'war'
-    id 'org.springframework.boot' version '3.2.3'
-    id 'io.spring.dependency-management' version '1.1.4'
-}
+### Development Commands
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
-}
+**View logs:**
+```bash
+# All services
+docker-compose logs -f
+
+# Specific service
+docker-compose logs -f backend
+docker-compose logs -f frontend  
+docker-compose logs -f database
 ```
 
-## Development Setup
+**Database access:**
+```bash
+# Connect to database
+docker-compose exec database mysql -u sammy -ppassword123 frontbackwebdb
 
-1. **Install Required Software**
-   ```bash
-   # Install Java 21 (if not installed)
-   brew install openjdk@21
-
-   # Install MySQL
-   brew install mysql@8.0
-
-   # Install Tomcat
-   brew install tomcat
-   ```
-
-2. **Configure Java**
-   ```bash
-   # Add Java to your PATH (add to your .zshrc or .bashrc)
-   export PATH="/opt/homebrew/opt/openjdk@21/bin:$PATH"
-   
-   # Set JAVA_HOME (add to your .zshrc or .bashrc)
-   export JAVA_HOME="/opt/homebrew/opt/openjdk@21"
-   ```
-
-## Database Configuration
-
-### Initial Database Setup
-
-The database must be set up manually before running the application for the first time. Follow these steps:
-
- - **Create Database and User** (run as root)
- - **Create Tables** (run as sammy)
- - **Insert Initial Data** (optional, run as sammy)
-   ```bash
-   mysql -u root -p < backend/src/main/resources/init.sql
-   ```
-
-
-### Database Management
-
-- The application is configured to NOT modify the database schema automatically
-- All database changes must be made manually using SQL scripts
-- To reset the database:
-  ```bash
-  mysql -u root -e "DROP DATABASE frontbackwebdb;"
-  ```
-  Then follow the initial setup steps again
-
-
-### Configuration Files
-
-- **init.sql**: One-time database and user creation script
-- **schema-init.sql**: Initial table creation script (run manually)
-- **data.sql**: Initial data insertion script (run manually)
-- **application.properties**: Database connection settings
-
-### Key Configuration Properties
-
-```properties
-# Database Configuration
-spring.datasource.url=jdbc:mysql://localhost:3306/frontbackwebdb
-spring.datasource.username=sammy
-spring.datasource.password=password123
-
-# Prevent Automatic Schema Changes
-spring.jpa.hibernate.ddl-auto=none
-spring.sql.init.mode=never
+# Run SQL queries
+docker-compose exec database mysql -u sammy -ppassword123 -e "SELECT * FROM users;"
 ```
+
+**Development cycle:**
+```bash
+# Stop services
+docker-compose down
+
+# Rebuild after code changes
+docker-compose build [service-name]
+
+# Start with fresh build
+docker-compose up --build
+```
+
+## Configuration
+
+The application uses Docker environment variables and configuration files:
+
+- **`docker-compose.yml`**: Service orchestration and environment variables
+- **`application-docker.properties`**: Docker-specific Spring Boot configuration
+- **`init.sql`**: Database initialization script (auto-executed)
+
+### Key Configuration Points
+
+- **Database**: Automatically initialized with sample admin user
+- **JWT Secret**: Configured via environment variables
+- **CORS**: Configured to allow frontend-backend communication
+- **Health Checks**: All services include health monitoring
+
+## Contributing
+
+1. **Fork the repository**
+2. **Create a feature branch**: `git checkout -b feature-name`  
+3. **Make changes and test**: `docker-compose up --build`
+4. **Commit changes**: `git commit -m "Add feature"`
+5. **Push to branch**: `git push origin feature-name`
+6. **Create Pull Request**
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
+
+**Built with ❤️ using Docker, Spring Boot, and React**
 
 
 

@@ -48,6 +48,36 @@ services:
       retries: 5
       start_period: 60s
 
+  # Python Translation Service
+  translation-service:
+    build:
+      context: ./translation-service
+      dockerfile: Dockerfile
+    container_name: audio-translation-service
+    restart: unless-stopped
+    environment:
+      ASSEMBLYAI_API_KEY: ${ASSEMBLYAI_API_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OPENAI_MODEL_NAME: ${OPENAI_MODEL_NAME:-gpt-4}
+      GOOGLE_SERVICE_ACCOUNT_PATH: /app/credentials/google-service-account.json
+    ports:
+      - "8001:8000"
+    volumes:
+      - translation_uploads:/app/uploads
+      - translation_outputs:/app/outputs
+      - ./google-credentials.json:/app/credentials/google-service-account.json:ro
+    networks:
+      - audio-translation-network
+    depends_on:
+      database:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
   # React Frontend
   frontend:
     build:
@@ -60,6 +90,8 @@ services:
     depends_on:
       backend:
         condition: service_healthy
+      translation-service:
+        condition: service_healthy
     networks:
       - audio-translation-network
     healthcheck:
@@ -71,6 +103,10 @@ services:
 
 volumes:
   mysql_data:
+    driver: local
+  translation_uploads:
+    driver: local
+  translation_outputs:
     driver: local
 
 networks:

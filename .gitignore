@@ -27,6 +27,10 @@ mysql_data/
 translation_uploads/
 translation_outputs/
 
+# Translation service working directories
+translation-service/uploads/
+translation-service/outputs/
+
 # Node.js / React
 node_modules/
 frontend/build/

@@ -56,8 +56,13 @@ class TTSService:
         }
         
         # Rate limiting
-        self.requests_per_minute = 300  # Google TTS limit
+        self.requests_per_minute = int(os.getenv("TTS_REQUESTS_PER_MINUTE", "300"))
         self.request_interval = 60.0 / self.requests_per_minute  # Seconds between requests
+        
+        # TTS Configuration
+        self.speaking_rate = float(os.getenv("TTS_SPEAKING_RATE", "1.2"))
+        self.audio_bitrate = os.getenv("TTS_AUDIO_BITRATE", "192k")
+        self.retry_base_delay = float(os.getenv("TTS_RETRY_BASE_DELAY", "2"))
         
     async def generate_japanese_audio(self, input_file: str, output_dir: str, merged_file: str) -> str:
         """
@@ -175,7 +180,7 @@ class TTSService:
         
         audio_config = texttospeech.AudioConfig(
             audio_encoding=texttospeech.AudioEncoding.MP3,
-            speaking_rate=0.9,  # Slightly slower for clarity
+            speaking_rate=self.speaking_rate,
             pitch=0.0,
             volume_gain_db=0.0
         )
@@ -200,7 +205,7 @@ class TTSService:
             except Exception as e:
                 logger.warning(f"TTS attempt {attempt + 1}/{max_retries} failed: {e}")
                 if attempt < max_retries - 1:
-                    await asyncio.sleep(2 ** attempt)  # Exponential backoff
+                    await asyncio.sleep(self.retry_base_delay ** attempt)  # Exponential backoff
                 else:
                     raise
     
@@ -243,7 +248,7 @@ class TTSService:
             
             # Export final merged file
             os.makedirs(os.path.dirname(output_file), exist_ok=True)
-            combined.export(output_file, format="mp3", bitrate="192k")
+            combined.export(output_file, format="mp3", bitrate=self.audio_bitrate)
             
             logger.info(f"✅ Merged audio saved: {output_file}")
             logger.info(f"Final audio duration: {len(combined) / 1000:.1f} seconds")

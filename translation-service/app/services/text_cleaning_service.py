@@ -12,6 +12,8 @@ class TextCleaningService:
     """
     
     def __init__(self):
+        # Configure text processing parameters
+        self.line_length_threshold = int(os.getenv("TEXT_LINE_LENGTH_THRESHOLD", "500"))
         logger.info("Text cleaning service initialized")
     
     async def clean_japanese_text(self, input_file: str, output_file: str) -> str:
@@ -304,7 +306,7 @@ class TextCleaningService:
             
             # Check line length (very long lines might cause TTS issues)
             lines = content.split('\n')
-            long_lines = [i for i, line in enumerate(lines, 1) if len(line) > 500]
+            long_lines = [i for i, line in enumerate(lines, 1) if len(line) > self.line_length_threshold]
             if long_lines:
                 warnings.append(f"Very long lines found at: {long_lines[:5]}")
             

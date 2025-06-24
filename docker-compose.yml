@@ -28,6 +28,8 @@ services:
       dockerfile: Dockerfile
     container_name: audio-translation-backend
     restart: unless-stopped
+    env_file:
+      - ./backend/.env
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_DATASOURCE_URL: jdbc:mysql://database:3306/frontbackwebdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
@@ -55,17 +57,16 @@ services:
       dockerfile: Dockerfile
     container_name: audio-translation-service
     restart: unless-stopped
+    env_file:
+      - ./translation-service/.env
     environment:
-      ASSEMBLYAI_API_KEY: ${ASSEMBLYAI_API_KEY}
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      OPENAI_MODEL_NAME: ${OPENAI_MODEL_NAME:-gpt-4}
-      GOOGLE_SERVICE_ACCOUNT_PATH: /app/credentials/google-service-account.json
+      GOOGLE_APPLICATION_CREDENTIALS: /app/credentials/google-credentials.json
     ports:
       - "8001:8000"
     volumes:
       - translation_uploads:/app/uploads
       - translation_outputs:/app/outputs
-      - ./google-credentials.json:/app/credentials/google-service-account.json:ro
+      - ./translation-service/google-credentials.json:/app/credentials/google-credentials.json:ro
     networks:
       - audio-translation-network
     depends_on:
@@ -85,6 +86,13 @@ services:
       dockerfile: Dockerfile
     container_name: audio-translation-frontend
     restart: unless-stopped
+    env_file:
+      - ./frontend/.env
+    environment:
+      # Frontend runs in browser, so uses external host URLs
+      REACT_APP_API_BASE_URL: http://localhost:8080/api
+      REACT_APP_TRANSLATION_SERVICE_URL: http://localhost:8001
+      REACT_APP_ENVIRONMENT: docker
     ports:
       - "3000:80"
     depends_on:

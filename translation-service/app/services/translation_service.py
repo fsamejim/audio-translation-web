@@ -24,10 +24,13 @@ class TranslationService:
         
         self.client = OpenAI(api_key=api_key)
         self.model_name = os.getenv("OPENAI_MODEL_NAME", "gpt-4")
+        self.temperature = float(os.getenv("OPENAI_TEMPERATURE", "0.3"))
         self.chunk_width = int(os.getenv("TRANSLATION_CHUNK_WIDTH", "3000"))
         self.max_retries = int(os.getenv("TRANSLATION_MAX_RETRIES", "3"))
+        self.retry_delay = float(os.getenv("TRANSLATION_RETRY_DELAY", "5"))
+        self.rate_limit_delay = float(os.getenv("TRANSLATION_RATE_LIMIT_DELAY", "1"))
         
-        logger.info(f"Translation service initialized with model: {self.model_name}")
+        logger.info(f"Translation service initialized with model: {self.model_name}, temperature: {self.temperature}")
     
     async def translate_to_japanese(self, input_file: str, chunks_dir: str) -> str:
         """
@@ -92,7 +95,7 @@ class TranslationService:
                         response = self.client.chat.completions.create(
                             model=self.model_name,
                             messages=messages,
-                            temperature=0.3  # Slightly lower for more consistent translation
+                            temperature=self.temperature
                         )
                         
                         content = response.choices[0].message.content.strip()
@@ -124,10 +127,10 @@ class TranslationService:
                                 f.write(f"Original text:\n{chunk}")
                         else:
                             # Wait before retrying
-                            await asyncio.sleep(5)
+                            await asyncio.sleep(self.retry_delay)
                 
                 # Small delay between chunks to respect rate limits
-                await asyncio.sleep(1)
+                await asyncio.sleep(self.rate_limit_delay)
             
             logger.info(f"Translation completed. Chunks saved in: {chunks_dir}")
             return chunks_dir

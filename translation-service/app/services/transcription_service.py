@@ -21,7 +21,13 @@ class TranscriptionService:
             raise ValueError("ASSEMBLYAI_API_KEY environment variable is required")
         
         aai.settings.api_key = api_key
-        logger.info("AssemblyAI service initialized")
+        
+        # Configure model and delays
+        model_name = os.getenv("ASSEMBLYAI_MODEL", "best")
+        self.speech_model = aai.SpeechModel.best if model_name == "best" else aai.SpeechModel.nano
+        self.rate_limit_delay = float(os.getenv("TRANSCRIPTION_RATE_LIMIT_DELAY", "1"))
+        
+        logger.info(f"AssemblyAI service initialized with model: {model_name}")
     
     async def transcribe_chunks(self, chunks_dir: str, output_file: str) -> str:
         """
@@ -51,7 +57,7 @@ class TranscriptionService:
             
             # Configure transcription with speaker diarization
             config = aai.TranscriptionConfig(
-                speech_model=aai.SpeechModel.best,
+                speech_model=self.speech_model,
                 speaker_labels=True
             )
             
@@ -86,7 +92,7 @@ class TranscriptionService:
                     logger.info(f"Successfully transcribed chunk {i}/{len(chunk_files)}")
                     
                     # Small delay to respect API rate limits
-                    await asyncio.sleep(1)
+                    await asyncio.sleep(self.rate_limit_delay)
                     
                 except Exception as e:
                     logger.error(f"Failed to transcribe chunk {chunk_file}: {e}")
@@ -127,7 +133,7 @@ class TranscriptionService:
             
             # Configure transcription
             config = aai.TranscriptionConfig(
-                speech_model=aai.SpeechModel.best,
+                speech_model=self.speech_model,
                 speaker_labels=True
             )
             

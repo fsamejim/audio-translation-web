@@ -72,6 +72,7 @@ audio-translation-web/
 │   │       ├── text_cleaning_service.py
 │   │       └── tts_service.py
 │   ├── requirements.txt      # Python dependencies
+│   ├── README.md             # Translation service documentation
 │   ├── .env.example         # Environment variables template
 │   └── google-credentials.json  # Google Cloud service account key
 │
@@ -119,9 +120,6 @@ For development without Docker (requires local setup):
    ```
 
 3. **Database**: Set up local MySQL with credentials in `application.properties`
-
-4. **Translation-Service**
-   Please see the detail at: translation-service/README.md
    
 ## Docker Deployment
 
@@ -217,6 +215,9 @@ The application consists of three containerized services:
    - Persistent data storage
    - Automatic initialization with sample data
    - Health checks and connection pooling
+   
+4. **Translation-Service**
+   Please see the detail at: translation-service/README.md
 
 ## Authentication Flow
 

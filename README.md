@@ -57,6 +57,24 @@ audio-translation-web/
 │   ├── build.gradle           # Backend dependencies
 │   └── gradlew               # Gradle wrapper
 │
+├── translation-service/        # Python FastAPI translation service
+│   ├── Dockerfile            # Translation service container build
+│   ├── app/
+│   │   ├── main.py           # FastAPI application entry point
+│   │   ├── models/           # Data models
+│   │   │   └── translation_job.py
+│   │   └── services/         # Translation pipeline services
+│   │       ├── audio_preprocessing_service.py
+│   │       ├── transcription_service.py
+│   │       ├── text_formatting_service.py
+│   │       ├── translation_service.py
+│   │       ├── chunk_merging_service.py
+│   │       ├── text_cleaning_service.py
+│   │       └── tts_service.py
+│   ├── requirements.txt      # Python dependencies
+│   ├── .env.example         # Environment variables template
+│   └── google-credentials.json  # Google Cloud service account key
+│
 └── README.md                 # Project documentation
 ```
 

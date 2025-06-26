@@ -28,8 +28,6 @@ services:
       dockerfile: Dockerfile
     container_name: audio-translation-backend
     restart: unless-stopped
-    env_file:
-      - ./backend/.env
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_DATASOURCE_URL: jdbc:mysql://database:3306/audiotranslationdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
@@ -86,8 +84,6 @@ services:
       dockerfile: Dockerfile
     container_name: audio-translation-frontend
     restart: unless-stopped
-    env_file:
-      - ./frontend/.env
     environment:
       # Frontend runs in browser, so uses external host URLs
       REACT_APP_API_BASE_URL: http://localhost:8080/api

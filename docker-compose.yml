@@ -5,7 +5,7 @@ services:
     container_name: audio-translation-db
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: frontbackwebdb
+      MYSQL_DATABASE: audiotranslationdb
       MYSQL_USER: sammy
       MYSQL_PASSWORD: password123
       MYSQL_ROOT_PASSWORD: rootpassword123
@@ -32,7 +32,7 @@ services:
       - ./backend/.env
     environment:
       SPRING_PROFILES_ACTIVE: docker
-      SPRING_DATASOURCE_URL: jdbc:mysql://database:3306/frontbackwebdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_URL: jdbc:mysql://database:3306/audiotranslationdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: sammy
       SPRING_DATASOURCE_PASSWORD: password123
       JWT_SECRET: THIS_IS_A_SECURE_SECRET_KEY_FOR_JWT_AUTHENTICATION_12345678901234567890

@@ -55,7 +55,16 @@ Before running the service, you need API keys for the following services:
   docker --version
   # Should show: Docker version XX.X.X, build...
 
-  4. Then Try Building:
+  4. If previous docker container is running or still exist
+   
+    docker rm audio-translation-service
+
+    or
+
+    docker rm 2052695ffb41 #(i.e., container id)
+
+
+  5. Then Try Building:
 
 ### 1. Build the Docker Image
 
@@ -144,8 +153,13 @@ Response:
 }
 
 example:
-input: 
+input: to Stand alone service
   curl -X POST "http://localhost:8000/translation/upload?user_id=1" \
+    -H "Content-Type: multipart/form-data" \
+    -F "file=@/Users/sammy.samejima/Downloads/joe-charlie-first-5min.mp3"
+
+input: to web service
+  curl -X POST "http://localhost:8001/translation/upload?user_id=1" \
     -H "Content-Type: multipart/form-data" \
     -F "file=@/Users/sammy.samejima/Downloads/joe-charlie-first-5min.mp3"
 
@@ -218,6 +232,42 @@ Response:
   ]
 }
 ```
+
+Alternatively, we can copy the data from docker_volume
+docker cp audio-translation-service:/app/outputs/ ./my-outputs/
+✅ To use docker cp, you must:
+	•	Make sure Docker is running (e.g., Docker Desktop is open and active on Mac).
+	•	The container (audio-translation-service) can be running or stopped — that’s okay.
+
+⏺ Docker volumes are NOT automatically cleaned - they persist until you explicitly remove them.
+
+  To see the inside the container
+  docker volume ls
+    DRIVER    VOLUME NAME
+    local     audio-translation-web_mysql_data
+    local     audio-translation-web_translation_outputs
+    local     audio-translation-web_translation_uploads
+
+  docker run --rm -it \
+    -v audio-translation-web_translation_outputs:/data \
+    alpine \
+    sh
+
+  Volume cleanup scenarios:
+
+  1. Automatic cleanup (when using docker-compose):
+  docker-compose down -v  # Removes containers AND volumes
+  2. Manual cleanup:
+  # Remove specific volume
+  docker volume rm audio-translation-web_translation_outputs
+
+  # Remove all unused volumes
+  docker volume prune
+  3. Check volume usage:
+  docker volume ls
+  docker system df  # Shows disk usage including volumes
+
+  
 
 ## File Management
 

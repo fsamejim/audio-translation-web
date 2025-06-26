@@ -1,15 +1,15 @@
 -- Create database if not exists
-CREATE DATABASE IF NOT EXISTS frontbackwebdb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS audiotranslationdb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- Create user if not exists and set password
 CREATE USER IF NOT EXISTS 'sammy'@'localhost' IDENTIFIED BY 'password123';
 
 -- Grant privileges to sammy user
-GRANT ALL PRIVILEGES ON frontbackwebdb.* TO 'sammy'@'localhost';
+GRANT ALL PRIVILEGES ON audiotranslationdb.* TO 'sammy'@'localhost';
 FLUSH PRIVILEGES;
 
 -- Switch to the new database
-USE frontbackwebdb;
+USE audiotranslationdb;
 
 -- Create users table if not exists
 CREATE TABLE IF NOT EXISTS users (

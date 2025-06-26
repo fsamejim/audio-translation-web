@@ -120,6 +120,9 @@ For development without Docker (requires local setup):
 
 3. **Database**: Set up local MySQL with credentials in `application.properties`
 
+4. **Translation-Service**
+   Please see the detail at: translation-service/README.md
+   
 ## Docker Deployment
 
 ### Prerequisites

@@ -1,7 +1,8 @@
 import axios from 'axios';
-import { LoginRequest, RegisterRequest, AuthResponse } from '../types/auth';
+import { LoginRequest, RegisterRequest, AuthResponse, User } from '../types/auth';
 
-const API_URL = 'http://localhost:8080/api/auth';
+const API_BASE_URL = '/api';
+const API_URL = `${API_BASE_URL}/auth`;
 
 // Function to set auth token in axios headers
 const setAuthToken = (token: string | null) => {
@@ -35,7 +36,7 @@ export const authService = {
         return response.data;
     },
 
-    getCurrentUser: async (): Promise<AuthResponse> => {
+    getCurrentUser: async (): Promise<User> => {
         const token = localStorage.getItem('token');
         if (!token) {
             throw new Error('No token found');

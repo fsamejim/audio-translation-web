@@ -84,14 +84,14 @@ docker-compose build [service-name]
 
 # Execute commands in running containers
 docker-compose exec backend bash
-docker-compose exec database mysql -u sammy -p frontbackwebdb
+docker-compose exec database mysql -u sammy -p audiotranslationdb
 ```
 
 ### Database Commands
 
 ```bash
 # Connect to database in Docker
-docker-compose exec database mysql -u sammy -ppassword123 frontbackwebdb
+docker-compose exec database mysql -u sammy -ppassword123 audiotranslationdb
 
 # Reset database (WARNING: deletes all data)
 docker-compose down -v
@@ -138,10 +138,10 @@ docker-compose logs database
 ## Database Configuration
 
 The application uses a MySQL database running in Docker with the following configuration:
-- Database name: `frontbackwebdb`
+- Database name: `audiotranslationdb`
 - Username: `sammy`
 - Password: `password123`
-- **Docker internal URL**: `jdbc:mysql://database:3306/frontbackwebdb`
+- **Docker internal URL**: `jdbc:mysql://database:3306/audiotranslationdb`
 - **External access**: `localhost:3307` (mapped from container port 3306)
 
 The database schema is managed manually, not through Hibernate's auto-generation. Database initialization happens automatically via Docker volume mount of `init.sql`.

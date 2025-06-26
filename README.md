@@ -138,7 +138,7 @@ docker-compose up [service-name]
 
 # Execute commands in running containers
 docker-compose exec backend bash
-docker-compose exec database mysql -u sammy -p frontbackwebdb
+docker-compose exec database mysql -u sammy -p audiotranslationdb
 ```
 
 ### Docker Troubleshooting
@@ -256,7 +256,7 @@ sudo kill -9 <PID>
 docker-compose down -v
 
 # Connect directly to database
-docker-compose exec database mysql -u sammy -ppassword123 frontbackwebdb
+docker-compose exec database mysql -u sammy -ppassword123 audiotranslationdb
 ```
 
 **Clean restart:**
@@ -323,7 +323,7 @@ docker-compose logs -f database
 **Database access:**
 ```bash
 # Connect to database
-docker-compose exec database mysql -u sammy -ppassword123 frontbackwebdb
+docker-compose exec database mysql -u sammy -ppassword123 audiotranslationdb
 
 # Run SQL queries
 docker-compose exec database mysql -u sammy -ppassword123 -e "SELECT * FROM users;"

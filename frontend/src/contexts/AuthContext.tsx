@@ -16,32 +16,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setIsAuthenticated(false);
     }, []);
 
-    // Skip automatic authentication on initial load
-    const [initialLoadComplete, setInitialLoadComplete] = useState<boolean>(false);
-    
     const initAuth = useCallback(async () => {
-        if (!initialLoadComplete) {
-            // Skip token validation on first load to prevent immediate backend call
-            setInitialLoadComplete(true);
-            if (token) {
-                // Just assume we're authenticated for now based on token presence
-                setIsAuthenticated(true);
-                // We'll validate the token when actually needed rather than on initial load
-            }
-            return;
-        }
-        
+        console.log('initAuth called, token exists:', !!token);
         if (token) {
             try {
+                console.log('Fetching current user...');
                 const response = await authService.getCurrentUser();
-                setUser(response.user);
+                console.log('User fetch successful:', response);
+                setUser(response);
                 setIsAuthenticated(true);
             } catch (error) {
                 console.error('Failed to get current user:', error);
                 logout();
             }
+        } else {
+            console.log('No token, setting user to null');
+            setUser(null);
+            setIsAuthenticated(false);
         }
-    }, [token, logout, initialLoadComplete]);
+    }, [token, logout]);
 
     useEffect(() => {
         initAuth();
@@ -53,6 +46,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setToken(response.token);
         setUser(response.user);
         setIsAuthenticated(true);
+        console.log('Login successful, user:', response.user);
     };
 
     const register = async (data: RegisterRequest) => {
